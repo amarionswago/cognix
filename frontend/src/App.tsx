@@ -119,11 +119,21 @@ export function App() {
             Draft-safe automation
           </div>
         </header>
-        {view === "ask" && <AskPage onSaved={refreshHealth} defaultStyle={profile.default_answer_style || "memo"} />}
-        {view === "ingest" && <IngestPage onIngested={refreshHealth} />}
-        {view === "outputs" && <OutputsPage />}
-        {view === "health" && <HealthPage health={health} setHealth={setHealth} />}
-        {view === "settings" && <SettingsPage profile={profile} setProfile={setProfile} />}
+        <div className={view === "ask" ? "view-panel active" : "view-panel"} aria-hidden={view !== "ask"}>
+          <AskPage onSaved={refreshHealth} defaultStyle={profile.default_answer_style || "memo"} />
+        </div>
+        <div className={view === "ingest" ? "view-panel active" : "view-panel"} aria-hidden={view !== "ingest"}>
+          <IngestPage onIngested={refreshHealth} />
+        </div>
+        <div className={view === "outputs" ? "view-panel active" : "view-panel"} aria-hidden={view !== "outputs"}>
+          <OutputsPage />
+        </div>
+        <div className={view === "health" ? "view-panel active" : "view-panel"} aria-hidden={view !== "health"}>
+          <HealthPage health={health} setHealth={setHealth} />
+        </div>
+        <div className={view === "settings" ? "view-panel active" : "view-panel"} aria-hidden={view !== "settings"}>
+          <SettingsPage profile={profile} setProfile={setProfile} />
+        </div>
       </section>
     </main>
   );
@@ -199,6 +209,9 @@ function IngestPage({ onIngested }: { onIngested: () => void }) {
   const [files, setFiles] = useState<any[]>([]);
   const [jobs, setJobs] = useState<any>({ jobs: [], errors: [] });
   const [loading, setLoading] = useState(false);
+  const activeIngest = Boolean((jobs.jobs || []).some((job: any) => job.kind === "ingest" && ["queued", "running", "processing", "started"].includes(job.status)));
+  const ingestBusy = loading || activeIngest;
+  const latestIngest = (jobs.jobs || []).find((job: any) => job.kind === "ingest");
 
   async function refresh() {
     setFiles(await getFiles());
@@ -207,6 +220,10 @@ function IngestPage({ onIngested }: { onIngested: () => void }) {
 
   useEffect(() => {
     refresh().catch(() => undefined);
+    const interval = window.setInterval(() => {
+      refresh().catch(() => undefined);
+    }, 3000);
+    return () => window.clearInterval(interval);
   }, []);
 
   async function ingest() {
@@ -227,11 +244,13 @@ function IngestPage({ onIngested }: { onIngested: () => void }) {
           <h2>Raw File Ingest</h2>
           <p>Drop files into <code>data/raw/</code>, then start ingest. Originals remain untouched.</p>
         </div>
-        <button className="primary" onClick={ingest} disabled={loading}>
+        <button className="primary" onClick={ingest} disabled={ingestBusy}>
           <FolderInput size={18} />
-          {loading ? "Running ingest" : "Run ingest"}
+          {ingestBusy ? "Running ingest" : "Run ingest"}
         </button>
       </section>
+      {ingestBusy && <p className="activity-note">Ingest is running. You can switch tabs; this page will keep updating.</p>}
+      {!ingestBusy && latestIngest && <p className="activity-note">{latestIngest.message}</p>}
       <section className="grid two">
         <DataTable title="Recent Files" rows={files} columns={["relative_path", "status", "source_type"]} />
         <DataTable title="Recent Jobs" rows={jobs.jobs || []} columns={["kind", "status", "message", "completed", "failed"]} />

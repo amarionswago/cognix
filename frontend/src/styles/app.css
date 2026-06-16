@@ -172,6 +172,14 @@ code {
   overflow: hidden;
 }
 
+.view-panel {
+  display: none;
+}
+
+.view-panel.active {
+  display: block;
+}
+
 .topbar {
   display: flex;
   align-items: center;
@@ -200,6 +208,12 @@ code {
 .stack {
   display: grid;
   gap: 1rem;
+}
+
+.activity-note {
+  margin: -0.35rem 0 0;
+  color: var(--muted);
+  font-size: 0.92rem;
 }
 
 .grid.two {
