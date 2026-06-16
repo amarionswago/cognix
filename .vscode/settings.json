@@ -1,0 +1,10 @@
+{
+  "markdown.preview.breaks": true,
+  "files.exclude": {
+    "**/.venv": true,
+    "**/node_modules": true,
+    "**/__pycache__": true
+  },
+  "yaml.schemas": {}
+}
+

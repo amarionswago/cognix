@@ -1,0 +1,21 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "Cognix: Backend",
+      "type": "shell",
+      "command": "uvicorn app.main:app --app-dir backend --reload",
+      "problemMatcher": []
+    },
+    {
+      "label": "Cognix: Frontend",
+      "type": "shell",
+      "command": "npm run dev",
+      "options": {
+        "cwd": "${workspaceFolder}/frontend"
+      },
+      "problemMatcher": []
+    }
+  ]
+}
+

@@ -1,0 +1,14 @@
+priorities:
+  ai_chats: 10
+  notes: 20
+  documents: 30
+  articles: 40
+  code: 50
+  browser: 60
+  media: 70
+  social: 80
+  finance: 90
+  health: 100
+  location: 110
+  images: 120
+

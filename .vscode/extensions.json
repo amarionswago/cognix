@@ -1,0 +1,11 @@
+{
+  "recommendations": [
+    "shd101wyy.markdown-preview-enhanced",
+    "marp-team.marp-vscode",
+    "foam.foam-vscode",
+    "bierner.markdown-mermaid",
+    "redhat.vscode-yaml",
+    "qwtel.sqlite-viewer"
+  ]
+}
+

@@ -1,0 +1,37 @@
+# Source policies for Cognix.
+# raw_subdir controls default classification and processing behavior.
+
+sources:
+  ai_chats:
+    sensitivity: personal
+    local_only: false
+    priority: 10
+  code:
+    sensitivity: personal
+    local_only: false
+    priority: 20
+  documents:
+    sensitivity: personal
+    local_only: false
+    priority: 30
+  browser:
+    sensitivity: personal
+    local_only: false
+    priority: 40
+  finance:
+    sensitivity: sensitive
+    local_only: true
+    priority: 50
+  health:
+    sensitivity: sensitive
+    local_only: true
+    priority: 60
+  legal:
+    sensitivity: sensitive
+    local_only: true
+    priority: 70
+  location:
+    sensitivity: sensitive
+    local_only: true
+    priority: 80
+

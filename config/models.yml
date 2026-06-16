@@ -1,0 +1,13 @@
+providers:
+  active_synthesis: deterministic-local
+  active_embedding: cognix-hash-embedding-v1
+
+local:
+  enabled: true
+  notes: "Provider adapter placeholder for Ollama or other local runtimes."
+
+cloud:
+  enabled: false
+  require_sensitive_approval: true
+  notes: "Cloud LLM and vision providers can be added after API keys and routing rules are configured."
+

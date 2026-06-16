@@ -1,0 +1,16 @@
+budgets:
+  monthly_cloud_usd: 25
+  require_confirmation_above_usd: 1
+  local_only_mode: false
+
+tasks:
+  vision:
+    enabled: false
+    max_files_per_run: 25
+  embeddings:
+    enabled: true
+    max_chunks_per_run: 100000
+  synthesis:
+    enabled: true
+    provider: deterministic-local
+
