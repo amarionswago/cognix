@@ -108,23 +108,6 @@ Or paste keys later in:
 Settings -> Model Providers
 ```
 
-Do not commit keys.
-
-### Step 6: GitHub Safety Rules
-
-Do not commit local runtime data:
-
-```text
-data/raw/
-data/library.sqlite
-data/processed/
-data/chroma/
-data/logs/
-.env
-```
-
-The included `.gitignore` protects the database, caches, logs, dependencies, and `.env` files.
-
 ## What Cognix Does
 
 Cognix is a local-first knowledge library with a working core loop:
