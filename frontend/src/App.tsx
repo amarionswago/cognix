@@ -286,8 +286,19 @@ function OutputsPage() {
 }
 
 function HealthPage({ health, setHealth }: { health: any; setHealth: (value: any) => void }) {
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
+
   async function run() {
-    setHealth(await runHealth());
+    setLoading(true);
+    setError("");
+    try {
+      setHealth(await runHealth());
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Health check failed");
+    } finally {
+      setLoading(false);
+    }
   }
   return (
     <div className="stack">
@@ -296,11 +307,12 @@ function HealthPage({ health, setHealth }: { health: any; setHealth: (value: any
           <h2>Library Health</h2>
           <p>Checks structure, ingest state, errors, chunks, and generated health reports.</p>
         </div>
-        <button className="primary" onClick={run}>
+        <button className="primary" onClick={run} disabled={loading}>
           <Activity size={18} />
-          Run health check
+          {loading ? "Running health check" : "Run health check"}
         </button>
       </section>
+      {error && <p className="error">{error}</p>}
       {health && (
         <>
           <div className="metric-grid">

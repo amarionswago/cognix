@@ -1,4 +1,5 @@
 import hashlib
+import threading
 from pathlib import Path
 
 from app.config import get_settings
@@ -12,6 +13,7 @@ from app.services.security import classify_sensitivity, classify_source_type
 
 
 SKIP_NAMES = {".DS_Store", ".gitkeep"}
+INGEST_LOCK = threading.Lock()
 
 
 def discover_raw_files() -> list[Path]:
@@ -32,6 +34,18 @@ def sha256_file(path: Path) -> str:
 def run_ingest(source: str = "manual") -> dict:
     settings = get_settings()
     settings.ensure_directories()
+    if not INGEST_LOCK.acquire(blocking=False):
+        job_id = create_job("ingest", f"Ingest skipped from {source}: another ingest is already running", total=0)
+        start_job(job_id, 0)
+        finish_job(job_id, 0, 0, "Ingest skipped: another ingest is already running")
+        return {"job_id": job_id, "discovered": 0, "processed": 0, "skipped": 0, "failed": 0}
+    try:
+        return _run_ingest_locked(source)
+    finally:
+        INGEST_LOCK.release()
+
+
+def _run_ingest_locked(source: str = "manual") -> dict:
     cleanup_ignored_files()
     files = discover_raw_files()
     job_id = create_job("ingest", f"Ingest started from {source}", total=len(files))
@@ -83,37 +97,47 @@ def ingest_one_file(path: Path, job_id: int | None = None) -> str:
     source_type = classify_source_type(path)
 
     with db_session() as conn:
-        cursor = conn.execute(
-            """
-            INSERT OR REPLACE INTO raw_files
-            (path, relative_path, sha256, size_bytes, extension, source_type, sensitivity,
-             status, parser_version, first_seen_at, last_seen_at, processed_at, error_count)
-            VALUES (?, ?, ?, ?, ?, ?, ?, 'processing', ?, COALESCE(
-                (SELECT first_seen_at FROM raw_files WHERE path=? AND sha256=?), ?
-            ), ?, NULL, 0)
-            """,
-            (
-                str(path),
-                relative_path,
-                digest,
-                stat.st_size,
-                extension,
-                source_type,
-                sensitivity,
-                PARSER_VERSION,
-                str(path),
-                digest,
-                utc_now(),
-                utc_now(),
-            ),
-        )
-        file_id = int(cursor.lastrowid)
+        existing = conn.execute("SELECT id FROM raw_files WHERE path=? AND sha256=?", (str(path), digest)).fetchone()
+        if existing:
+            file_id = int(existing["id"])
+            conn.execute(
+                """
+                UPDATE raw_files
+                SET relative_path=?, size_bytes=?, extension=?, source_type=?, sensitivity=?,
+                    status='processing', parser_version=?, last_seen_at=?, processed_at=NULL, error_count=0
+                WHERE id=?
+                """,
+                (relative_path, stat.st_size, extension, source_type, sensitivity, PARSER_VERSION, utc_now(), file_id),
+            )
+        else:
+            cursor = conn.execute(
+                """
+                INSERT INTO raw_files
+                (path, relative_path, sha256, size_bytes, extension, source_type, sensitivity,
+                 status, parser_version, first_seen_at, last_seen_at, processed_at, error_count)
+                VALUES (?, ?, ?, ?, ?, ?, ?, 'processing', ?, ?, ?, NULL, 0)
+                """,
+                (
+                    str(path),
+                    relative_path,
+                    digest,
+                    stat.st_size,
+                    extension,
+                    source_type,
+                    sensitivity,
+                    PARSER_VERSION,
+                    utc_now(),
+                    utc_now(),
+                ),
+            )
+            file_id = int(cursor.lastrowid)
 
     text_path = _write_processed_text(path, parsed.text)
     chunks = chunk_text(parsed.text)
 
     chunk_records: list[tuple[int, str]] = []
     with db_session() as conn:
+        conn.execute("DELETE FROM extracted_documents WHERE file_id=?", (file_id,))
         doc_cursor = conn.execute(
             """
             INSERT INTO extracted_documents
@@ -131,7 +155,6 @@ def ingest_one_file(path: Path, job_id: int | None = None) -> str:
             ),
         )
         document_id = int(doc_cursor.lastrowid)
-        conn.execute("DELETE FROM chunks WHERE file_id=?", (file_id,))
         for chunk in chunks:
             chunk_cursor = conn.execute(
                 """
@@ -143,6 +166,7 @@ def ingest_one_file(path: Path, job_id: int | None = None) -> str:
             )
             chunk_records.append((int(chunk_cursor.lastrowid), chunk.text))
         conn.execute("UPDATE raw_files SET status='processed', processed_at=? WHERE id=?", (utc_now(), file_id))
+        conn.execute("DELETE FROM ingest_errors WHERE path=?", (str(path),))
 
     for chunk_id, text in chunk_records:
         store_chunk_embedding(chunk_id, text)
