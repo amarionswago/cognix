@@ -823,14 +823,3 @@ Important difference:
 - `wiki/` is the readable knowledge/output layer.
 - `data/library.sqlite` and `data/chroma/` are the searchable index behind the UI.
 
-## Shipping On GitHub
-
-Recommended repository behavior:
-
-- Commit source code, docs, config examples, and empty `.gitkeep` folders.
-- Do not commit local research/source files in `data/raw/` unless you intentionally want them in the repository.
-- Do not commit `data/library.sqlite`.
-- Do not commit API keys or `.env` files.
-- Do not commit generated private outputs unless intentionally sharing them.
-
-The included `.gitignore` already protects the local database, processed cache, Chroma data, logs, virtual environment, and frontend dependencies.
