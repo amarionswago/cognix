@@ -6,6 +6,7 @@ from pathlib import Path
 from typing import Any
 
 from app.config import get_settings
+from app.db.schema_v2 import apply_v2_migration
 
 
 def utc_now() -> str:
@@ -42,4 +43,4 @@ def init_db() -> None:
     schema_path = Path(__file__).with_name("schema.sql")
     with db_session() as conn:
         conn.executescript(schema_path.read_text(encoding="utf-8"))
-
+        apply_v2_migration(conn)

@@ -15,7 +15,7 @@ _stop_event = threading.Event()
 def ensure_background_rows() -> None:
     now = utc_now()
     with db_session() as conn:
-        for name, interval in {"watcher": 20, "scheduler": 300}.items():
+        for name, interval in {"watcher": 20, "scheduler": 300, "intelligence": 86400}.items():
             conn.execute(
                 """
                 INSERT OR IGNORE INTO background_services
@@ -34,7 +34,7 @@ def list_background_services() -> list[dict]:
 
 def set_background_service(name: str, enabled: bool, interval_seconds: int | None = None) -> dict:
     ensure_background_rows()
-    if name not in {"watcher", "scheduler"}:
+    if name not in {"watcher", "scheduler", "intelligence"}:
         raise ValueError(f"Unknown background service: {name}")
     if interval_seconds is None:
         with db_session() as conn:
@@ -73,12 +73,12 @@ def _polling_loop(name: str) -> None:
             try:
                 if name == "watcher":
                     result = run_ingest("watcher")
-                    message = f"Watcher ingest: {result['processed']} processed, {result['skipped']} skipped, {result['failed']} failed"
+                    message = f"Watcher ingest: {result['processed']} processed, {result['skipped']} unchanged, {result['failed']} failed"
                 else:
                     result = run_ingest("scheduler")
                     compile_source_summaries()
                     run_health_check()
-                    message = f"Scheduled run: {result['processed']} processed, {result['skipped']} skipped, {result['failed']} failed"
+                    message = f"Scheduled run: {result['processed']} processed, {result['skipped']} unchanged, {result['failed']} failed"
                 _mark_run(name, message)
             except Exception as exc:
                 _mark_run(name, f"{type(exc).__name__}: {exc}")

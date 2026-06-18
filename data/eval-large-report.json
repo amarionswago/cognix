@@ -1,0 +1,309 @@
+{
+  "large_file_benchmark": {
+    "files": [
+      {
+        "chunks": 96,
+        "expected_query": "large html benchmark neural retrieval section",
+        "extracted_documents": 1,
+        "family": "html",
+        "retrieval_hit": true,
+        "retrieval_latency_ms": 31.639,
+        "size_bytes": 310874,
+        "source_path": "articles/large_ai_reference.html",
+        "status": "processed",
+        "top_sources": [
+          "articles/large_ai_reference.html",
+          "articles/large_ai_reference.html",
+          "articles/large_ai_reference.html",
+          "articles/large_ai_reference.html",
+          "articles/large_ai_reference.html",
+          "articles/large_ai_reference.html",
+          "articles/large_ai_reference.html",
+          "articles/large_ai_reference.html",
+          "articles/large_ai_reference.html",
+          "articles/large_ai_reference.html"
+        ]
+      },
+      {
+        "chunks": 2,
+        "expected_query": "large csv benchmark transaction embedding latency",
+        "extracted_documents": 1,
+        "family": "csv",
+        "retrieval_hit": true,
+        "retrieval_latency_ms": 19.452,
+        "size_bytes": 202801,
+        "source_path": "data/large_metrics.csv",
+        "status": "processed",
+        "top_sources": [
+          "data/large_metrics.csv",
+          "data/large_metrics.csv"
+        ]
+      },
+      {
+        "chunks": 71,
+        "expected_query": "large json benchmark calibration outcomes",
+        "extracted_documents": 1,
+        "family": "json",
+        "retrieval_hit": true,
+        "retrieval_latency_ms": 36.442,
+        "size_bytes": 211980,
+        "source_path": "exports/large_records.json",
+        "status": "processed",
+        "top_sources": [
+          "exports/large_records.json",
+          "exports/large_records.json",
+          "exports/large_records.json",
+          "exports/large_records.json",
+          "exports/large_records.json",
+          "exports/large_records.json",
+          "exports/large_records.json",
+          "exports/large_records.json",
+          "exports/large_records.json",
+          "exports/large_records.json"
+        ]
+      },
+      {
+        "chunks": 57,
+        "expected_query": "large python benchmark reranker pipeline",
+        "extracted_documents": 1,
+        "family": "code",
+        "retrieval_hit": true,
+        "retrieval_latency_ms": 34.518,
+        "size_bytes": 210600,
+        "source_path": "code/large_pipeline.py",
+        "status": "processed",
+        "top_sources": [
+          "code/large_pipeline.py",
+          "code/large_pipeline.py",
+          "code/large_pipeline.py",
+          "code/large_pipeline.py",
+          "code/large_pipeline.py",
+          "code/large_pipeline.py",
+          "code/large_pipeline.py",
+          "code/large_pipeline.py",
+          "code/large_pipeline.py",
+          "code/large_pipeline.py"
+        ]
+      },
+      {
+        "chunks": 232,
+        "expected_query": "durable ingest checkpoints semantic retrieval large file",
+        "extracted_documents": 1,
+        "family": "log",
+        "retrieval_hit": true,
+        "retrieval_latency_ms": 2026.027,
+        "size_bytes": 664000,
+        "source_path": "logs/large_eval.log",
+        "status": "processed",
+        "top_sources": [
+          "logs/large_eval.log",
+          "logs/large_eval.log",
+          "logs/large_eval.log",
+          "logs/large_eval.log",
+          "logs/large_eval.log",
+          "logs/large_eval.log",
+          "logs/large_eval.log",
+          "logs/large_eval.log",
+          "logs/large_eval.log",
+          "logs/large_eval.log"
+        ]
+      },
+      {
+        "chunks": 109,
+        "expected_query": "large markdown benchmark temporal intelligence review",
+        "extracted_documents": 1,
+        "family": "markdown",
+        "retrieval_hit": true,
+        "retrieval_latency_ms": 52.622,
+        "size_bytes": 338400,
+        "source_path": "research/large_review.md",
+        "status": "processed",
+        "top_sources": [
+          "research/large_review.md",
+          "research/large_review.md",
+          "research/large_review.md",
+          "research/large_review.md",
+          "research/large_review.md",
+          "research/large_review.md",
+          "research/large_review.md",
+          "research/large_review.md",
+          "research/large_review.md",
+          "research/large_review.md"
+        ]
+      },
+      {
+        "chunks": 126,
+        "expected_query": "large pdf benchmark adversarial retrieval appendix",
+        "extracted_documents": 1,
+        "family": "pdf_text_fallback",
+        "retrieval_hit": true,
+        "retrieval_latency_ms": 75.607,
+        "size_bytes": 336600,
+        "source_path": "documents/large_appendix.pdf",
+        "status": "processed",
+        "top_sources": [
+          "documents/large_appendix.pdf",
+          "documents/large_appendix.pdf",
+          "documents/large_appendix.pdf",
+          "documents/large_appendix.pdf",
+          "documents/large_appendix.pdf",
+          "documents/large_appendix.pdf",
+          "documents/large_appendix.pdf",
+          "documents/large_appendix.pdf",
+          "documents/large_appendix.pdf",
+          "documents/large_appendix.pdf"
+        ]
+      },
+      {
+        "chunks": 93,
+        "expected_query": "large email benchmark knowledge audit thread",
+        "extracted_documents": 1,
+        "family": "email",
+        "retrieval_hit": true,
+        "retrieval_latency_ms": 59.55,
+        "size_bytes": 314600,
+        "source_path": "exports/large_thread.eml",
+        "status": "processed",
+        "top_sources": [
+          "exports/large_thread.eml",
+          "exports/large_thread.eml",
+          "exports/large_thread.eml",
+          "exports/large_thread.eml",
+          "exports/large_thread.eml",
+          "exports/large_thread.eml",
+          "exports/large_thread.eml",
+          "exports/large_thread.eml",
+          "exports/large_thread.eml",
+          "exports/large_thread.eml"
+        ]
+      }
+    ],
+    "scale": "standard",
+    "summary": {
+      "chunks": 796,
+      "coverage": 1.0,
+      "embeddings": 796,
+      "failed_large_files": 0,
+      "ingest_result": {
+        "discovered": 15,
+        "failed": 0,
+        "ignored_removed": 0,
+        "job_id": 1,
+        "processed": 15,
+        "skipped": 0
+      },
+      "ingest_seconds": 16.477,
+      "max_retrieval_seconds": 2.026,
+      "peak_rss_mb": 77.05,
+      "processed_large_files": 8,
+      "raw_file_count": 8,
+      "recall_at_10": 1.0,
+      "supported_large_file_count": 8,
+      "throughput_mb_s": 0.1572,
+      "total_bytes": 2589855
+    },
+    "thresholds": {
+      "max_ingest_seconds": 45.0,
+      "max_peak_rss_mb": 900.0,
+      "max_retrieval_seconds": 4.0,
+      "min_recall_at_10": 1.0,
+      "min_supported_file_coverage": 0.99,
+      "min_total_bytes": 2500000
+    }
+  },
+  "passed": true,
+  "results": [
+    {
+      "detail": "discovered=15, processed=15, failed=0, elapsed_seconds=16.477",
+      "metric": 1.0,
+      "name": "ingest_coverage",
+      "passed": true
+    },
+    {
+      "detail": "[{\"hit\": true, \"question\": \"any evidence on an html file talking about artificial intelligence\", \"sources\": [\"articles/ai_overview.html\", \"articles/large_ai_reference.html\", \"articles/large_ai_reference.html\", \"articles/large_ai_reference.html\", \"articles/large_ai_reference.html\"]}, {\"hit\": true, \"question\": \"what does the library say about semantic search\", \"sources\": [\"research/semantic_search.md\", \"logs/large_eval.log\", \"logs/large_eval.log\", \"logs/large_eval.log\", \"logs/large_eval.log\"]}, {\"hit\": true, \"question\": \"any pdfs about hacking\", \"sources\": [\"documents/hacking_notes.pdf\", \"documents/hacking_notes.pdf\"]}]",
+      "metric": 1.0,
+      "name": "retrieval_recall_at_5",
+      "passed": true
+    },
+    {
+      "detail": "[{\"confidence\": 0.0, \"method\": \"image-ocr-empty\", \"page_count\": 1, \"passed\": true, \"path\": \"scans/ocr_whiteboard.png\", \"status\": \"processed\", \"text_length\": 48}, {\"confidence\": 0.0, \"method\": \"pdf-ocr-tesseract\", \"page_count\": 1, \"passed\": true, \"path\": \"scans/scanned_notes.pdf\", \"status\": \"processed\", \"text_length\": 59}]",
+      "metric": 1.0,
+      "name": "ocr_vision_artifact_coverage",
+      "passed": true
+    },
+    {
+      "detail": "{\"brier_score\": 0.026457, \"examples\": 48, \"high_calibrated\": 0.8643, \"log_loss\": 0.175509, \"low_calibrated\": 0.1421, \"method\": \"logistic_platt_score_v1\", \"negative_examples\": 24, \"positive_examples\": 24}",
+      "metric": 0.7222,
+      "name": "calibrated_probability_model",
+      "passed": true
+    },
+    {
+      "detail": "{\"accuracy\": 1.0, \"artifact\": \"/tmp/cognix-eval-j0njkh_3/data/models/eval-cognix-reranker-cross-encoder.json\", \"mean_confidence\": 0.9898, \"pdf_irrelevant\": 0.386573, \"pdf_relevant\": 0.955078, \"semantic_irrelevant\": 0.056749, \"semantic_relevant\": 0.767286}",
+      "metric": 0.5685,
+      "name": "local_neural_cross_encoder_reranker",
+      "passed": true
+    },
+    {
+      "detail": "{\"accuracy\": 1.0, \"artifact\": \"/tmp/cognix-eval-j0njkh_3/data/models/eval-cognix-nli-cross-encoder.json\", \"contradiction\": {\"confidence\": 0.993, \"label\": \"contradiction\"}, \"mean_confidence\": 0.9899, \"related\": {\"confidence\": 0.9819, \"label\": \"related\"}, \"unrelated\": {\"confidence\": 0.9883, \"label\": \"unrelated\"}}",
+      "metric": 1.0,
+      "name": "local_trained_nli_cross_encoder",
+      "passed": true
+    },
+    {
+      "detail": "{\"accuracy\": 1.0, \"artifact\": \"/tmp/cognix-eval-j0njkh_3/data/models/eval-cognix-nli-transformer-lora.json\", \"contradiction\": {\"confidence\": 0.9951, \"label\": \"contradiction\"}, \"mean_confidence\": 0.9937, \"related\": {\"confidence\": 0.9877, \"label\": \"related\"}, \"trainable_parameters\": 139.0, \"unrelated\": {\"confidence\": 0.9939, \"label\": \"unrelated\"}}",
+      "metric": 1.0,
+      "name": "transformer_lora_nli_finetune",
+      "passed": true
+    },
+    {
+      "detail": "{\"artifact\": \"/tmp/cognix-eval-j0njkh_3/data/models/eval-cognix-sft-adapter.json\", \"examples\": 2, \"prototype_confidence\": 0.9608, \"selected_prototype\": \"What is semantic search?\", \"training_accuracy\": 1.0}",
+      "metric": 1.0,
+      "name": "custom_cognix_sft_adapter",
+      "passed": true
+    },
+    {
+      "detail": "total_bytes=2589855, minimum=2500000",
+      "metric": 2589855.0,
+      "name": "large_total_bytes",
+      "passed": true
+    },
+    {
+      "detail": "processed=8, total=8, failed=0",
+      "metric": 1.0,
+      "name": "large_supported_file_coverage",
+      "passed": true
+    },
+    {
+      "detail": "chunks=796, embeddings=796",
+      "metric": 0.0,
+      "name": "large_chunk_embedding_parity",
+      "passed": true
+    },
+    {
+      "detail": "elapsed_seconds=16.4770, max_seconds=45.0",
+      "metric": 0.1572,
+      "name": "large_ingest_throughput_mb_s",
+      "passed": true
+    },
+    {
+      "detail": "peak_rss_mb=77.05, max_peak_rss_mb=900.0",
+      "metric": 77.05,
+      "name": "large_peak_rss_mb",
+      "passed": true
+    },
+    {
+      "detail": "[{\"chunks\": 96, \"expected_query\": \"large html benchmark neural retrieval section\", \"extracted_documents\": 1, \"family\": \"html\", \"retrieval_hit\": true, \"retrieval_latency_ms\": 31.639, \"size_bytes\": 310874, \"source_path\": \"articles/large_ai_reference.html\", \"status\": \"processed\", \"top_sources\": [\"articles/large_ai_reference.html\", \"articles/large_ai_reference.html\", \"articles/large_ai_reference.html\", \"articles/large_ai_reference.html\", \"articles/large_ai_reference.html\", \"articles/large_ai_reference.html\", \"articles/large_ai_reference.html\", \"articles/large_ai_reference.html\", \"articles/large_ai_reference.html\", \"articles/large_ai_reference.html\"]}, {\"chunks\": 2, \"expected_query\": \"large csv benchmark transaction embedding latency\", \"extracted_documents\": 1, \"family\": \"csv\", \"retrieval_hit\": true, \"retrieval_latency_ms\": 19.452, \"size_bytes\": 202801, \"source_path\": \"data/large_metrics.csv\", \"status\": \"processed\", \"top_sources\": [\"data/large_metrics.csv\", \"data/large_metrics.csv\"]}, {\"chunks\": 71, \"expected_query\": \"large json benchmark calibration outcomes\", \"extracted_documents\": 1, \"family\": \"json\", \"retrieval_hit\": true, \"retrieval_latency_ms\": 36.442, \"size_bytes\": 211980, \"source_path\": \"exports/large_records.json\", \"status\": \"processed\", \"top_sources\": [\"exports/large_records.json\", \"exports/large_records.json\", \"exports/large_records.json\", \"exports/large_records.json\", \"exports/large_records.json\", \"exports/large_records.json\", \"exports/large_records.json\", \"exports/large_records.json\", \"exports/large_records.json\", \"exports/large_records.json\"]}, {\"chunks\": 57, \"expected_query\": \"large python benchmark reranker pipeline\", \"extracted_documents\": 1, \"family\": \"code\", \"retrieval_hit\": true, \"retrieval_latency_ms\": 34.518, \"size_bytes\": 210600, \"source_path\": \"code/large_pipeline.py\", \"status\": \"processed\", \"top_sources\": [\"code/large_pipeline.py\", \"code/large_pipeline.py\", \"code/large_pipeline.py\", \"code/large_pipeline.py\", \"code/large_pipeline.py\", \"code/large_pipeline.py\", \"code/large_pipeline.py\", \"code/large_pipeline.py\", \"code/large_pipeline.py\", \"code/large_pipeline.py\"]}, {\"chunks\": 232, \"expected_query\": \"durable ingest checkpoints semantic retrieval large file\", \"extracted_documents\": 1, \"family\": \"log\", \"retrieval_hit\": true, \"retrieval_latency_ms\": 2026.027, \"size_bytes\": 664000, \"source_path\": \"logs/large_eval.log\", \"status\": \"processed\", \"top_sources\": [\"logs/large_eval.log\", \"logs/large_eval.log\", \"logs/large_eval.log\", \"logs/large_eval.log\", \"logs/large_eval.log\", \"logs/large_eval.log\", \"logs/large_eval.log\", \"logs/large_eval.log\", \"logs/large_eval.log\", \"logs/large_eval.log\"]}, {\"chunks\": 109, \"expected_query\": \"large markdown benchmark temporal intelligence review\", \"extracted_documents\": 1, \"family\": \"markdown\", \"retrieval_hit\": true, \"retrieval_latency_ms\": 52.622, \"size_bytes\": 338400, \"source_path\": \"research/large_review.md\", \"status\": \"processed\", \"top_sources\": [\"research/large_review.md\", \"research/large_review.md\", \"research/large_review.md\", \"research/large_review.md\", \"research/large_review.md\", \"research/large_review.md\", \"research/large_review.md\", \"research/large_review.md\", \"research/large_review.md\", \"research/large_review.md\"]}, {\"chunks\": 126, \"expected_query\": \"large pdf benchmark adversarial retrieval appendix\", \"extracted_documents\": 1, \"family\": \"pdf_text_fallback\", \"retrieval_hit\": true, \"retrieval_latency_ms\": 75.607, \"size_bytes\": 336600, \"source_path\": \"documents/large_appendix.pdf\", \"status\": \"processed\", \"top_sources\": [\"documents/large_appendix.pdf\", \"documents/large_appendix.pdf\", \"documents/large_appendix.pdf\", \"documents/large_appendix.pdf\", \"documents/large_appendix.pdf\", \"documents/large_appendix.pdf\", \"documents/large_appendix.pdf\", \"documents/large_appendix.pdf\", \"documents/large_appendix.pdf\", \"documents/large_appendix.pdf\"]}, {\"chunks\": 93, \"expected_query\": \"large email benchmark knowledge audit thread\", \"extracted_documents\": 1, \"family\": \"email\", \"retrieval_hit\": true, \"retrieval_latency_ms\": 59.55, \"size_bytes\": 314600, \"source_path\": \"exports/large_thread.eml\", \"status\": \"processed\", \"top_sources\": [\"exports/large_thread.eml\", \"exports/large_thread.eml\", \"exports/large_thread.eml\", \"exports/large_thread.eml\", \"exports/large_thread.eml\", \"exports/large_thread.eml\", \"exports/large_thread.eml\", \"exports/large_thread.eml\", \"exports/large_thread.eml\", \"exports/large_thread.eml\"]}]",
+      "metric": 1.0,
+      "name": "large_file_family_recall_at_10",
+      "passed": true
+    },
+    {
+      "detail": "max_retrieval_seconds=2.0260, limit=4.0",
+      "metric": 2.026,
+      "name": "large_retrieval_latency",
+      "passed": true
+    }
+  ],
+  "scale": "standard",
+  "suite": "large"
+}

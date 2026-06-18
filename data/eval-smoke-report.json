@@ -1,0 +1,62 @@
+{
+  "large_file_benchmark": {},
+  "passed": true,
+  "results": [
+    {
+      "detail": "discovered=8, processed=8, failed=0, elapsed_seconds=6.203",
+      "metric": 1.0,
+      "name": "ingest_coverage",
+      "passed": true
+    },
+    {
+      "detail": "[{\"hit\": true, \"question\": \"any evidence on an html file talking about artificial intelligence\", \"sources\": [\"articles/ai_overview.html\"]}, {\"hit\": true, \"question\": \"what does the library say about semantic search\", \"sources\": [\"research/semantic_search.md\", \"logs/large_eval.log\", \"logs/large_eval.log\", \"logs/large_eval.log\", \"logs/large_eval.log\"]}, {\"hit\": true, \"question\": \"any pdfs about hacking\", \"sources\": [\"documents/hacking_notes.pdf\", \"documents/hacking_notes.pdf\"]}]",
+      "metric": 1.0,
+      "name": "retrieval_recall_at_5",
+      "passed": true
+    },
+    {
+      "detail": "[{\"confidence\": 0.0, \"method\": \"image-ocr-empty\", \"page_count\": 1, \"passed\": true, \"path\": \"scans/ocr_whiteboard.png\", \"status\": \"processed\", \"text_length\": 48}, {\"confidence\": 0.0, \"method\": \"pdf-ocr-tesseract\", \"page_count\": 1, \"passed\": true, \"path\": \"scans/scanned_notes.pdf\", \"status\": \"processed\", \"text_length\": 59}]",
+      "metric": 1.0,
+      "name": "ocr_vision_artifact_coverage",
+      "passed": true
+    },
+    {
+      "detail": "{\"brier_score\": 0.026457, \"examples\": 48, \"high_calibrated\": 0.8643, \"log_loss\": 0.175509, \"low_calibrated\": 0.1421, \"method\": \"logistic_platt_score_v1\", \"negative_examples\": 24, \"positive_examples\": 24}",
+      "metric": 0.7222,
+      "name": "calibrated_probability_model",
+      "passed": true
+    },
+    {
+      "detail": "{\"accuracy\": 1.0, \"artifact\": \"/tmp/cognix-eval-zuviy573/data/models/eval-cognix-reranker-cross-encoder.json\", \"mean_confidence\": 0.9898, \"pdf_irrelevant\": 0.386573, \"pdf_relevant\": 0.955078, \"semantic_irrelevant\": 0.056749, \"semantic_relevant\": 0.767286}",
+      "metric": 0.5685,
+      "name": "local_neural_cross_encoder_reranker",
+      "passed": true
+    },
+    {
+      "detail": "{\"accuracy\": 1.0, \"artifact\": \"/tmp/cognix-eval-zuviy573/data/models/eval-cognix-nli-cross-encoder.json\", \"contradiction\": {\"confidence\": 0.993, \"label\": \"contradiction\"}, \"mean_confidence\": 0.9899, \"related\": {\"confidence\": 0.9819, \"label\": \"related\"}, \"unrelated\": {\"confidence\": 0.9883, \"label\": \"unrelated\"}}",
+      "metric": 1.0,
+      "name": "local_trained_nli_cross_encoder",
+      "passed": true
+    },
+    {
+      "detail": "{\"accuracy\": 1.0, \"artifact\": \"/tmp/cognix-eval-zuviy573/data/models/eval-cognix-nli-transformer-lora.json\", \"contradiction\": {\"confidence\": 0.9951, \"label\": \"contradiction\"}, \"mean_confidence\": 0.9937, \"related\": {\"confidence\": 0.9877, \"label\": \"related\"}, \"trainable_parameters\": 139.0, \"unrelated\": {\"confidence\": 0.9939, \"label\": \"unrelated\"}}",
+      "metric": 1.0,
+      "name": "transformer_lora_nli_finetune",
+      "passed": true
+    },
+    {
+      "detail": "{\"artifact\": \"/tmp/cognix-eval-zuviy573/data/models/eval-cognix-sft-adapter.json\", \"examples\": 2, \"prototype_confidence\": 0.9608, \"selected_prototype\": \"What is semantic search?\", \"training_accuracy\": 1.0}",
+      "metric": 1.0,
+      "name": "custom_cognix_sft_adapter",
+      "passed": true
+    },
+    {
+      "detail": "{\"briefing_id\": 1, \"briefing_path\": \"/tmp/cognix-eval-zuviy573/wiki/_intelligence/intelligence-brief-2026-06-17.md\", \"findings_created\": 11, \"run_id\": 1, \"status\": \"completed\"}",
+      "metric": 11.0,
+      "name": "intelligence_findings",
+      "passed": true
+    }
+  ],
+  "scale": "standard",
+  "suite": "smoke"
+}

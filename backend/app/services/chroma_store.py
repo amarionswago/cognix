@@ -3,17 +3,28 @@ from app.services.embeddings import EMBEDDING_MODEL, embed_text
 
 
 def upsert_chunk(chunk_id: int, text: str, metadata: dict) -> None:
+    upsert_chunks([(chunk_id, text, metadata, embed_text(text))])
+
+
+def upsert_chunks(records: list[tuple[int, str, dict, list[float]]], batch_size: int = 128) -> None:
+    if not records:
+        return
+    if not get_settings().chroma_enabled:
+        return
     collection = get_collection()
-    vector = embed_text(text)
-    collection.upsert(
-        ids=[str(chunk_id)],
-        embeddings=[vector],
-        documents=[text],
-        metadatas=[metadata],
-    )
+    for index in range(0, len(records), batch_size):
+        batch = records[index : index + batch_size]
+        collection.upsert(
+            ids=[str(chunk_id) for chunk_id, _text, _metadata, _vector in batch],
+            embeddings=[vector for _chunk_id, _text, _metadata, vector in batch],
+            documents=[text for _chunk_id, text, _metadata, _vector in batch],
+            metadatas=[metadata for _chunk_id, _text, metadata, _vector in batch],
+        )
 
 
 def query_chunks(question: str, limit: int) -> list[dict]:
+    if not get_settings().chroma_enabled:
+        return []
     collection = get_collection()
     result = collection.query(query_embeddings=[embed_text(question)], n_results=limit)
     rows: list[dict] = []

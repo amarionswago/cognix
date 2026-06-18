@@ -36,8 +36,39 @@ if [ ! -d ".venv" ]; then
   python -m venv .venv
 fi
 
-echo "Installing/updating backend dependencies..."
-".venv/bin/python" -m pip install -e backend
+backend_deps_ready() {
+  ".venv/bin/python" - <<'PY'
+import importlib.util
+
+modules = [
+    "fastapi",
+    "uvicorn",
+    "pydantic",
+    "pydantic_settings",
+    "httpx",
+    "multipart",
+    "pypdf",
+    "chromadb",
+    "watchdog",
+    "apscheduler",
+]
+missing = [module for module in modules if importlib.util.find_spec(module) is None]
+if missing:
+    print(", ".join(missing))
+    raise SystemExit(1)
+PY
+}
+
+if [ "${COGNIX_UPDATE_DEPS:-0}" = "1" ]; then
+  echo "Installing/updating backend dependencies..."
+  ".venv/bin/python" -m pip install -e backend
+elif MISSING_BACKEND_DEPS="$(backend_deps_ready)"; then
+  echo "Backend dependencies already installed."
+else
+  echo "Missing backend dependencies: ${MISSING_BACKEND_DEPS}"
+  echo "Installing/updating backend dependencies..."
+  ".venv/bin/python" -m pip install -e backend
+fi
 
 if [ ! -d "frontend/node_modules" ]; then
   echo "Installing frontend dependencies..."

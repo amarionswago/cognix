@@ -31,6 +31,7 @@ Recommended:
 
 ```text
 tesseract        local OCR for images/screenshots/scans
+pdftoppm         local scanned-PDF page rendering, usually from poppler-utils
 ollama           optional local LLM provider
 git              clone and manage repos
 ```
@@ -47,10 +48,11 @@ Check optional tools:
 
 ```bash
 tesseract --version
+pdftoppm -v
 ollama --version
 ```
 
-If `tesseract` is missing, Cognix still tracks images but stores OCR status text instead of extracted image text.
+If `tesseract` is missing, Cognix still tracks images but stores OCR status text instead of extracted image text. If `pdftoppm` is missing, selectable PDFs still work, but scanned/image-only PDFs cannot be locally OCRed.
 
 If `ollama` is missing, only cloud providers and the local deterministic fallback are available.
 
@@ -82,6 +84,231 @@ http://127.0.0.1:8000
 ```
 
 Press `Ctrl+C` in that terminal to stop both services.
+
+### Step 3.1: Run Product Evaluation Before Shipping
+
+Before a customer-facing release, run the baseline checks:
+
+```bash
+.venv/bin/python -m pytest -q backend/tests
+npm --prefix frontend run build
+.venv/bin/python backend/evals/run_evals.py
+.venv/bin/python backend/evals/run_evals.py --suite large --report data/eval-large-report.json
+```
+
+What these prove:
+
+- backend unit tests still pass
+- the frontend still builds
+- a temporary labeled library can ingest files
+- retrieval finds the expected HTML, PDF, and markdown sources
+- image and scanned-PDF inputs produce auditable OCR extraction artifact rows
+- the persisted logistic confidence calibrator can train and apply from labeled eval outcomes
+- the intelligence pass creates findings and a saved brief
+- the large suite checks larger ingest/retrieval behavior without running the full intelligence audit
+- the large suite writes an optional JSON report with file-family metrics
+
+What they do **not** prove yet:
+
+- every huge real-world file will ingest perfectly
+- every answer is correct
+- ChromaDB performance is fully benchmarked under every customer machine profile
+- OCR/vision quality is production-complete
+
+Treat failures here as release blockers.
+
+The large benchmark currently measures:
+
+- generated large-file bytes
+- supported file coverage
+- failed large-file count
+- OCR/vision artifact coverage
+- calibrated probability model training/application
+- chunk count
+- chunk/embedding parity
+- ingest elapsed time
+- ingest throughput in MB/s
+- peak RSS memory
+- per-family retrieval latency
+- per-family recall@10
+
+The current large fixture families are HTML, CSV, JSON, Python/code, log/text, markdown, text-recoverable PDF fallback, and email export.
+
+### Optional Local ML Backends
+
+Cognix works without heavy ML packages, but stronger local ML can be enabled on capable machines.
+
+Install optional ML dependencies:
+
+```bash
+.venv/bin/python -m pip install -e "backend[ml]"
+```
+
+Enable local neural embeddings:
+
+```bash
+export COGNIX_LOCAL_EMBEDDING_BACKEND=sentence-transformers
+export COGNIX_SENTENCE_TRANSFORMER_MODEL=sentence-transformers/all-MiniLM-L6-v2
+```
+
+Enable trained cross-encoder reranking:
+
+```bash
+export COGNIX_RERANKER_BACKEND=cross-encoder
+export COGNIX_CROSS_ENCODER_MODEL=cross-encoder/ms-marco-MiniLM-L-6-v2
+```
+
+Enable trained NLI contradiction classification:
+
+```bash
+export COGNIX_NLI_BACKEND=cross-encoder
+export COGNIX_NLI_MODEL=cross-encoder/nli-deberta-v3-small
+```
+
+If those models are unavailable, Cognix falls back to deterministic local behavior instead of failing startup.
+
+Train Cognix's local pair reranker without external model downloads:
+
+```bash
+.venv/bin/python backend/training/train_pair_model.py --task reranker --register-artifact
+export COGNIX_RERANKER_BACKEND=cognix-pair
+```
+
+Train Cognix's local pair NLI model without external model downloads:
+
+```bash
+.venv/bin/python backend/training/train_pair_model.py --task nli --register-artifact
+export COGNIX_NLI_BACKEND=cognix-pair
+```
+
+The local pair models are small trained neural baselines over text pairs. They are not transformer cross-encoders, but they give Cognix its own trainable reranker and contradiction-classifier artifacts under `data/models/`.
+
+Train all local Cognix baseline model artifacts at once:
+
+```bash
+.venv/bin/python backend/training/bootstrap_local_models.py --register-artifacts
+```
+
+This writes:
+
+- `data/models/cognix-reranker-pair.json`
+- `data/models/cognix-reranker-cross-encoder.json`
+- `data/models/cognix-nli-pair.json`
+- `data/models/cognix-nli-cross-encoder.json`
+- `data/models/cognix-micro-synthesis.json`
+
+Then enable the local trained paths you want:
+
+```bash
+export COGNIX_RERANKER_BACKEND=cognix-cross-encoder
+export COGNIX_NLI_BACKEND=cognix-cross-encoder
+export COGNIX_SYNTHESIS_BACKEND=cognix-micro
+```
+
+Use `cognix-pair` instead of `cognix-cross-encoder` if you want the smaller hashed pair MLP. The cross-encoder artifacts read both texts together and are the stronger local trained baseline, but they are still not transformer-class models.
+
+Train Cognix's local micro-synthesis model from reviewed Q&A examples:
+
+```bash
+.venv/bin/python backend/training/train_cognix_micro_model.py \
+  --dataset data/exports/training/qa_citation-reviewed-sft.jsonl \
+  --register-artifact
+export COGNIX_SYNTHESIS_BACKEND=cognix-micro
+```
+
+This model learns Cognix's answer structure, evidence-section style, citation habits, and lightweight term salience from reviewed SFT examples. It still answers from retrieved source chunks. It is not a foundation model or a LoRA adapter, but it is a real local trained Cognix synthesis artifact under `data/models/`.
+
+Enable OpenAI vision for image extraction:
+
+```bash
+export COGNIX_VISION_BACKEND=openai
+export COGNIX_OPENAI_VISION_MODEL=gpt-4.1-mini
+```
+
+Privacy note: local OCR keeps image/PDF processing on your machine. OpenAI vision sends image bytes to the configured OpenAI account so the model can extract visible text and visual context.
+
+### Fine-Tuning Readiness
+
+Cognix can export reviewed Q&A examples and validate a LoRA fine-tuning run.
+
+Export reviewed examples to SFT JSONL from Python:
+
+```bash
+.venv/bin/python -c "from app.services.training_export import export_sft_jsonl; print(export_sft_jsonl('qa_citation', 'reviewed'))" 
+```
+
+Validate a future LoRA run without training:
+
+```bash
+.venv/bin/python backend/training/train_lora.py \
+  --dataset data/exports/training/qa_citation-reviewed-sft.jsonl \
+  --output-dir data/models/cognix-lora \
+  --base-model meta-llama/Llama-3.2-3B-Instruct \
+  --adapter-name cognix-lora \
+  --dry-run
+```
+
+Install optional training dependencies only on a machine intended for training:
+
+```bash
+.venv/bin/python -m pip install -e "backend[training]"
+```
+
+Run the same command without `--dry-run` to start an actual LoRA training job.
+
+Important: Cognix now has the fine-tuning pipeline, dataset validator, manifest writer, and model artifact registry. The repo does not ship with a pre-trained Cognix adapter yet.
+
+### Confidence Calibration
+
+Cognix starts with a heuristic answer-confidence score. After enough answers or eval predictions have reviewed outcomes, it can train a small probability model that maps raw confidence to observed correctness.
+
+Train the calibrator from reviewed/eval outcomes:
+
+```bash
+.venv/bin/python backend/training/train_calibrator.py --task answer_confidence
+```
+
+This requires at least 20 reviewed/eval outcomes for `answer_confidence`, including both correct and incorrect examples. After training, Cognix saves the calibrator in SQLite and future answer confidence uses the persisted probability model.
+
+The product eval also checks this path automatically with synthetic labeled eval outcomes. That proves the calibration mechanism works. Real production calibration should be trained from reviewed customer/library outcomes, not from the synthetic eval labels.
+
+After a real adapter exists, Cognix can generate a local model package manifest and Ollama Modelfile from Python:
+
+```bash
+.venv/bin/python -c "from pathlib import Path; from app.services.finetuning import write_ollama_modelfile, build_model_package_manifest; p=write_ollama_modelfile('llama3.2', Path('data/models/cognix-lora'), Path('data/models/cognix-lora/Modelfile')); print(build_model_package_manifest('cognix-lora', 'llama3.2', Path('data/models/cognix-lora'), p)['load_command'])"
+```
+
+That prints the command to create the named local model, for example:
+
+```bash
+ollama create cognix-lora -f data/models/cognix-lora/Modelfile
+```
+
+### Advanced ML Readiness Check
+
+Cognix exposes a readiness endpoint for the advanced ML features:
+
+```text
+http://127.0.0.1:8000/api/ml/readiness
+```
+
+It reports whether these are actually available on the current machine:
+
+- local neural embeddings
+- neural reranker
+- trained NLI contradiction model
+- LoRA training stack
+- custom Cognix adapter artifact
+- OCR/vision pipeline
+- calibrated confidence
+- large-file benchmark suite
+
+States:
+
+- `ready`: usable now
+- `configured`: settings or records exist, but runtime proof is not complete
+- `fallback`: Cognix is using the deterministic fallback
+- `missing`: required dependency, model, key, or artifact is absent
 
 ### Step 4: Runtime Folders
 
@@ -170,6 +397,40 @@ Controls:
 - Trash icon: mark the output record as deleted.
 
 The current trash action updates the SQLite record status. It does not delete the markdown file from disk.
+
+### Intelligence
+
+Use this to run Cognix as a proactive knowledge auditor.
+
+Controls:
+
+- Run intelligence: runs the offline/no-cost intelligence pass by default.
+- Knowledge gaps: concepts Cognix sees repeatedly but cannot find as structured wiki pages.
+- Contradictions: confirmed or candidate conflicts between extracted claims.
+- Resolve: marks a contradiction finding as resolved after you review it.
+- Concept Graph Pulse: quick view of frequent concepts from the current gap findings.
+- Intelligence Brief: the latest generated markdown brief.
+
+The intelligence pass currently performs:
+
+- concept extraction,
+- knowledge gap detection,
+- claim extraction,
+- contradiction candidate detection,
+- stale claim candidate detection,
+- Intelligence Brief generation.
+
+Generated briefs are saved here:
+
+```text
+wiki/_intelligence/
+```
+
+Important:
+
+- The default web UI run avoids cloud LLM calls.
+- Provider-backed LLM judgment can be enabled through the API later when you want deeper contradiction confirmation.
+- Findings are stored in SQLite first, then rendered into the brief. This keeps the UI and wiki auditable.
 
 ### Health
 
@@ -379,7 +640,35 @@ Current behavior:
 
 - Text/code files are parsed.
 - Git metadata is preserved in the raw repo folder; source files are parsed for retrieval.
-- Binary build artifacts are not useful and can be ignored.
+- Dependency folders, cache folders, saved-page asset folders, and binary build artifacts are ignored by default.
+- This means folders like `.venv/`, `venv/`, `node_modules/`, `site-packages/`, `__pycache__/`, `dist/`, `build/`, `.pytest_cache/`, `.ruff_cache/`, `.git/`, and `*_files/` stay in `data/raw/` but are not indexed.
+
+Why this matters:
+
+- A small-looking repo can contain thousands of dependency/cache files.
+- Indexing those files makes ingest slow and makes Ask/Search return dependency noise instead of your actual project.
+- Cognix keeps the raw folder untouched, but it only indexes files that are likely to contain useful knowledge.
+
+### Large Files
+
+Cognix can ingest large files, but large does not mean instant.
+
+What happens during ingest:
+
+- Cognix reads the file and extracts text.
+- It splits the extracted text into searchable chunks.
+- It embeds and indexes those chunks in batches.
+- It writes source summaries and wiki records from the indexed evidence.
+
+Large PDFs, long text files, big exports, large HTML pages, and large logs can all produce hundreds or thousands of chunks. That takes longer than a small note because Cognix is building searchable memory, not only copying the file.
+
+Important limits:
+
+- Text-based PDFs are much faster than scanned/image-only PDFs.
+- Photos/screenshots need OCR, which is CPU-heavy and depends on `tesseract`.
+- Scanned/image-only PDFs need `pdftoppm` plus `tesseract` for local page rendering and OCR.
+- Huge binary files that do not contain useful text are skipped or recorded as unsupported instead of being treated as knowledge.
+- Original files always stay untouched in `data/raw/`.
 
 ### Step 4: If It Is Raw Text
 
@@ -419,18 +708,20 @@ Current behavior:
 
 - Cognix tracks the file.
 - Cognix runs local OCR if `tesseract` is installed.
-- If OCR is not installed or finds no text, Cognix stores a clear placeholder.
+- If OpenAI vision is enabled, Cognix can ask the configured OpenAI vision model to extract visible text and visual context.
+- Cognix stores OCR method, confidence, page count, text length, warnings, and metadata in SQLite.
+- If OCR is not installed or finds no text, Cognix stores a clear placeholder and a low-confidence extraction artifact.
 
-Optional companion note:
+Optional correction note:
 
-If the image contains important text, create a companion note:
+If OCR gets important text wrong, create a companion note:
 
 ```text
 data/raw/images/receipt-2026-06-16.jpg
 data/raw/notes/receipt-2026-06-16.md
 ```
 
-In the note, type or paste the important visible text.
+In the note, type or paste the corrected visible text. Cognix will index both the original image extraction and your correction note.
 
 ### Step 6: If It Is A PDF
 
@@ -443,7 +734,9 @@ data/raw/documents/
 Current behavior:
 
 - Selectable-text PDFs are parsed.
-- Scanned/image-only PDFs are tracked clearly; extractable PDFs are parsed directly.
+- Scanned/image-only PDFs use `pdftoppm` plus `tesseract` when both tools are installed.
+- If local scanned-PDF OCR tools are unavailable, Cognix tracks the PDF clearly and stores an OCR-missing warning instead of silently pretending the file was read.
+- OCR/PDF extraction metadata is stored in SQLite for audit and future health checks.
 
 If a scanned PDF matters right now, create a companion markdown note with the key text or summary.
 
@@ -637,6 +930,7 @@ Supported now:
 - text extraction from selectable PDFs
 - OCR text when local OCR is available
 - clear OCR status text when local OCR is unavailable
+- extraction artifact rows that record method, confidence, page count, text length, and warnings
 
 ### Notes
 
@@ -665,6 +959,7 @@ Supported now:
 - files are detected and tracked
 - local OCR runs when `tesseract` is installed
 - clear OCR status text is stored when OCR is unavailable
+- extraction artifact rows record method, confidence, text length, and warnings
 
 ### Code
 
@@ -679,6 +974,7 @@ Supported now:
 - common text/code files are parsed
 - source files are parsed for retrieval
 - Git metadata remains available in the raw repository folder
+- generated dependency/cache/build folders are skipped during ingest so repo dumps stay fast and search stays focused
 
 ### AI Chats
 
@@ -822,4 +1118,3 @@ Important difference:
 - `data/raw/` is the permanent source vault.
 - `wiki/` is the readable knowledge/output layer.
 - `data/library.sqlite` and `data/chroma/` are the searchable index behind the UI.
-

@@ -11,8 +11,66 @@ export type AskResponse = {
   answer: string;
   sources: SourceSnippet[];
   retrieval_summary: string;
+  retrieval_diagnostics: {
+    chunk_count?: number;
+    unique_source_count?: number;
+    unique_sources?: string[];
+    max_score?: number;
+    mean_score?: number;
+    extension_filter?: string[];
+    subquery_count?: number;
+    keyword_group_count?: number;
+    keyword_group_hits?: number;
+    notes?: string[];
+  };
+  confidence: {
+    score: number;
+    label: "high" | "medium" | "low";
+    breakdown: Record<string, unknown>;
+  };
   output_id: number | null;
   output_path: string | null;
+};
+
+export type IntelligenceFinding = {
+  id: number;
+  finding_type: string;
+  severity: string;
+  title: string;
+  description: string;
+  source_refs_json: string;
+  suggested_action: string;
+  status: string;
+  confidence: number;
+  metadata_json: string;
+  created_at: string;
+  updated_at: string;
+  resolved_at: string | null;
+};
+
+export type BriefingResponse = {
+  id: number;
+  brief_date: string;
+  title: string;
+  path: string;
+  summary: string;
+  finding_counts_json: string;
+  status: string;
+  content: string;
+  created_at: string;
+  updated_at: string;
+};
+
+export type MlCapability = {
+  name: string;
+  state: "ready" | "configured" | "fallback" | "missing";
+  message: string;
+  detail: Record<string, unknown>;
+};
+
+export type MlReadiness = {
+  summary: Record<string, number>;
+  capabilities: MlCapability[];
 };
 
 export async function getStatus() {
@@ -31,6 +89,37 @@ export async function askQuestion(question: string, style: string): Promise<AskR
     method: "POST",
     body: JSON.stringify({ question, style, save: true })
   });
+}
+
+export async function runIntelligence(useLlm = false) {
+  return request("/intelligence/run", {
+    method: "POST",
+    body: JSON.stringify({ use_llm: useLlm })
+  });
+}
+
+export async function listIntelligenceFindings(): Promise<IntelligenceFinding[]> {
+  return request("/intelligence/findings");
+}
+
+export async function listGaps(): Promise<IntelligenceFinding[]> {
+  return request("/gaps");
+}
+
+export async function listContradictions(): Promise<IntelligenceFinding[]> {
+  return request("/contradictions");
+}
+
+export async function resolveContradiction(id: number): Promise<IntelligenceFinding> {
+  return request(`/contradictions/${id}/resolve`, { method: "POST" });
+}
+
+export async function getLatestBriefing(): Promise<BriefingResponse> {
+  return request("/briefings/latest");
+}
+
+export async function getMlReadiness(): Promise<MlReadiness> {
+  return request("/ml/readiness");
 }
 
 export async function listOutputs() {

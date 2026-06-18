@@ -1,10 +1,11 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-from app.api import ask, background, files, health, ingest, jobs, outputs, providers, settings
+from app.api import ask, background, briefings, files, graph, health, ingest, intelligence, jobs, ml, outputs, providers, settings
 from app.config import get_settings
 from app.database import init_db
 from app.services.background import start_background_threads
+from app.services.scheduler import start_intelligence_scheduler
 
 
 def create_app() -> FastAPI:
@@ -27,10 +28,15 @@ def create_app() -> FastAPI:
     app.include_router(files.router)
     app.include_router(providers.router)
     app.include_router(background.router)
+    app.include_router(intelligence.router)
+    app.include_router(briefings.router)
+    app.include_router(graph.router)
+    app.include_router(ml.router)
 
     @app.on_event("startup")
     def startup_background() -> None:
         start_background_threads()
+        start_intelligence_scheduler()
 
     return app
 

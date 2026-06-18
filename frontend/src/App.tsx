@@ -7,6 +7,7 @@ import {
   FileSearch,
   FolderInput,
   Gauge,
+  GitBranch,
   MessageSquareText,
   Settings,
   Sparkles,
@@ -33,13 +34,16 @@ import {
   updateBackgroundService,
   updateOutput
 } from "./api/client";
+import { ConfidenceBar } from "./components/ConfidenceBar";
+import { IntelligencePage } from "./pages/Intelligence";
 
-type View = "ask" | "ingest" | "outputs" | "health" | "settings";
+type View = "ask" | "ingest" | "outputs" | "intelligence" | "health" | "settings";
 
 const navItems: { id: View; label: string; icon: LucideIcon }[] = [
   { id: "ask", label: "Ask", icon: MessageSquareText },
   { id: "ingest", label: "Ingest", icon: FolderInput },
   { id: "outputs", label: "Outputs", icon: FileSearch },
+  { id: "intelligence", label: "Intelligence", icon: GitBranch },
   { id: "health", label: "Health", icon: Gauge },
   { id: "settings", label: "Settings", icon: Settings }
 ];
@@ -128,6 +132,9 @@ export function App() {
         <div className={view === "outputs" ? "view-panel active" : "view-panel"} aria-hidden={view !== "outputs"}>
           <OutputsPage />
         </div>
+        <div className={view === "intelligence" ? "view-panel active" : "view-panel"} aria-hidden={view !== "intelligence"}>
+          <IntelligencePage />
+        </div>
         <div className={view === "health" ? "view-panel active" : "view-panel"} aria-hidden={view !== "health"}>
           <HealthPage health={health} setHealth={setHealth} />
         </div>
@@ -187,6 +194,8 @@ function AskPage({ onSaved, defaultStyle }: { onSaved: () => void; defaultStyle:
         {!result && <EmptyState title="No answer yet" text="Ingest files first, then ask a question. Answers are saved as draft analysis pages." />}
         {result && (
           <>
+            <ConfidenceBar score={result.confidence.score} label={result.confidence.label} />
+            <EvidenceDiagnostics diagnostics={result.retrieval_diagnostics} summary={result.retrieval_summary} />
             <div className="answer-text">{result.answer}</div>
             <h3>Sources</h3>
             <div className="source-list">
@@ -202,6 +211,30 @@ function AskPage({ onSaved, defaultStyle }: { onSaved: () => void; defaultStyle:
         )}
       </section>
     </div>
+  );
+}
+
+function EvidenceDiagnostics({ diagnostics, summary }: { diagnostics: any; summary: string }) {
+  const notes = diagnostics?.notes || [];
+  return (
+    <section className="evidence-diagnostics">
+      <div>
+        <strong>Evidence check</strong>
+        <span>{summary}</span>
+      </div>
+      <div className="diagnostic-grid">
+        <span>{diagnostics?.chunk_count ?? 0} chunks</span>
+        <span>{diagnostics?.unique_source_count ?? 0} sources</span>
+        <span>Mean score {diagnostics?.mean_score ?? 0}</span>
+      </div>
+      {notes.length > 0 && (
+        <ul>
+          {notes.map((note: string) => (
+            <li key={note}>{note}</li>
+          ))}
+        </ul>
+      )}
+    </section>
   );
 }
 

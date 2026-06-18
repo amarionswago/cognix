@@ -13,6 +13,7 @@ class IngestResponse(BaseModel):
     processed: int
     skipped: int
     failed: int
+    ignored_removed: int = 0
 
 
 class AskRequest(BaseModel):
@@ -28,10 +29,18 @@ class SourceSnippet(BaseModel):
     score: float
 
 
+class ConfidenceSnippet(BaseModel):
+    score: float
+    label: Literal["high", "medium", "low"]
+    breakdown: dict[str, Any]
+
+
 class AskResponse(BaseModel):
     answer: str
     sources: list[SourceSnippet]
     retrieval_summary: str
+    retrieval_diagnostics: dict[str, Any]
+    confidence: ConfidenceSnippet
     output_id: int | None = None
     output_path: str | None = None
 
@@ -58,3 +67,56 @@ class HealthSummary(BaseModel):
     score: int
     totals: dict[str, int]
     findings: list[dict[str, Any]]
+
+
+class IntelligenceRunRequest(BaseModel):
+    use_llm: bool = False
+
+
+class IntelligenceRunResponse(BaseModel):
+    run_id: int
+    status: str
+    findings_created: int
+    briefing_id: int
+    briefing_path: str
+
+
+class IntelligenceFindingResponse(BaseModel):
+    id: int
+    finding_type: str
+    severity: str
+    title: str
+    description: str
+    source_refs_json: str
+    suggested_action: str
+    status: str
+    confidence: float
+    metadata_json: str
+    created_at: str
+    updated_at: str
+    resolved_at: str | None = None
+
+
+class BriefingResponse(BaseModel):
+    id: int
+    brief_date: str
+    title: str
+    path: str
+    summary: str
+    finding_counts_json: str
+    status: str
+    content: str
+    created_at: str
+    updated_at: str
+
+
+class MlCapabilityResponse(BaseModel):
+    name: str
+    state: Literal["ready", "configured", "fallback", "missing"]
+    message: str
+    detail: dict[str, Any]
+
+
+class MlReadinessResponse(BaseModel):
+    summary: dict[str, int]
+    capabilities: list[MlCapabilityResponse]
