@@ -674,7 +674,7 @@ textarea {
   justify-content: center;
 }
 
-.concept-graph svg {
+.concept-graph > svg {
   width: 100%;
   min-height: 300px;
   border: 1px solid var(--border);
@@ -682,12 +682,12 @@ textarea {
   background: var(--surface-soft);
 }
 
-.concept-graph line {
+.concept-graph > svg line {
   stroke: var(--border-strong);
   stroke-width: 1.2;
 }
 
-.concept-graph text {
+.concept-graph > svg text {
   fill: var(--text);
   font-size: 0.72rem;
   pointer-events: none;
